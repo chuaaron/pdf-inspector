@@ -1526,6 +1526,9 @@ fn merge_text_items_with_clips(
                 item_type: first.item_type.clone(),
                 mcid: first.mcid,
                 baseline_shift: 0.0,
+
+                image_data: first.image_data.clone(),
+                image_format: first.image_format.clone(),
             });
 
             i = j;
@@ -1673,6 +1676,9 @@ mod tests {
             item_type: ItemType::Text,
             mcid: None,
             baseline_shift: 0.0,
+
+            image_data: None,
+            image_format: None,
         }
     }
 
@@ -2066,6 +2072,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
             TextItem {
                 text: "World".into(),
@@ -2087,6 +2096,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
             TextItem {
                 text: "Next line".into(),
@@ -2108,6 +2120,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
         ];
 
@@ -2899,6 +2914,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
             TextItem {
                 text: "Prague".into(),
@@ -2920,6 +2938,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
             TextItem {
                 text: "Rules".into(),
@@ -2941,6 +2962,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
         ];
 
@@ -2973,6 +2997,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
             TextItem {
                 text: "A".into(),
@@ -2994,6 +3021,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
             TextItem {
                 text: "V".into(),
@@ -3015,6 +3045,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
         ];
 
@@ -3049,6 +3082,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             }
         }
 
@@ -3090,6 +3126,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             }
         }
 
@@ -3132,6 +3171,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
             TextItem {
                 text: "履行義務".into(),
@@ -3153,6 +3195,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
             TextItem {
                 text: "を識別す".into(),
@@ -3174,6 +3219,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
         ];
 
@@ -3203,6 +3251,9 @@ mod tests {
             item_type: ItemType::Text,
             mcid: None,
             baseline_shift: 0.0,
+
+            image_data: None,
+            image_format: None,
         }
     }
 
@@ -3347,6 +3398,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
             TextItem {
                 text: "\u{05D1}".into(), // bet at x=200 (rightmost)
@@ -3368,6 +3422,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
         ];
         sort_line_items(&mut items);
@@ -3399,6 +3456,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
             TextItem {
                 text: "World".into(),
@@ -3420,6 +3480,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             },
         ];
         sort_line_items(&mut items);
@@ -3467,6 +3530,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             }],
         };
 
@@ -3518,6 +3584,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             }],
         };
 
@@ -3569,6 +3638,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             }],
         };
 
@@ -3613,6 +3685,9 @@ mod tests {
             item_type: ItemType::Text,
             mcid: None,
             baseline_shift: 0.0,
+
+            image_data: None,
+            image_format: None,
         }
     }
 

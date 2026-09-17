@@ -1377,6 +1377,9 @@ mod tests {
             item_type: ItemType::Text,
             mcid: None,
             baseline_shift: 0.0,
+
+            image_data: None,
+            image_format: None,
         }
     }
 
@@ -1581,6 +1584,9 @@ mod tests {
             item_type: ItemType::Text,
             mcid: None,
             baseline_shift: 0.0,
+
+            image_data: None,
+            image_format: None,
         }
     }
 
@@ -1707,6 +1713,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             });
             // Alternate between letter-gap and word-gap to create bimodal distribution
             x += w + if wi % 3 == 2 { word_gap } else { letter_gap };
@@ -1790,6 +1799,9 @@ mod tests {
             item_type: ItemType::Text,
             mcid: None,
             baseline_shift: 0.0,
+
+            image_data: None,
+            image_format: None,
         }
     }
 
@@ -1889,6 +1901,9 @@ mod tests {
             is_strikeout: false,
             item_type: ItemType::Text,
             mcid: None,
+
+            image_data: None,
+            image_format: None,
         }
     }
 

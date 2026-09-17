@@ -127,6 +127,9 @@ pub fn extract_page_links(doc: &Document, page_id: ObjectId, page_num: u32) -> V
                             item_type: ItemType::Link(url),
                             mcid: None,
                             baseline_shift: 0.0,
+
+                            image_data: None,
+                            image_format: None,
                         });
                     }
                 }
@@ -465,6 +468,9 @@ pub(crate) fn walk_form_fields(
         item_type: ItemType::FormField,
         mcid: None,
         baseline_shift: 0.0,
+
+        image_data: None,
+        image_format: None,
     });
 }
 

@@ -59,7 +59,7 @@ pub use extractor::{
     extract_text_with_positions_pages_with_password, PositionFrame,
 };
 pub use markdown::{
-    to_markdown, to_markdown_from_items, to_markdown_from_items_with_rects,
+    export_images, to_markdown, to_markdown_from_items, to_markdown_from_items_with_rects,
     to_markdown_from_items_with_rects_and_page_count, MarkdownOptions, MarkdownProfile,
 };
 pub use process_mode::ProcessMode;
@@ -273,6 +273,19 @@ impl PdfOptions {
     /// Include or exclude AcroForm form-field values (default: `true`).
     pub fn include_form_fields(mut self, include: bool) -> Self {
         self.include_form_fields = include;
+        self
+    }
+
+    /// Enable or disable image inclusion in Markdown.
+    pub fn with_images(mut self, include: bool) -> Self {
+        self.markdown.include_images = include;
+        self
+    }
+
+    /// Enable image inclusion and set the export directory for images in Markdown.
+    pub fn with_image_dir(mut self, dir: impl Into<String>) -> Self {
+        self.markdown.include_images = true;
+        self.markdown.image_dir = Some(dir.into());
         self
     }
 }
@@ -859,6 +872,9 @@ mod ocr_header_footer_tests {
             item_type: types::ItemType::Text,
             mcid: None,
             baseline_shift: 0.0,
+
+            image_data: None,
+            image_format: None,
         }
     }
 
@@ -5623,6 +5639,9 @@ mod text_cluster_column_undercount_tests {
             item_type: ItemType::Text,
             mcid: None,
             baseline_shift: 0.0,
+
+            image_data: None,
+            image_format: None,
         }
     }
 
@@ -5904,6 +5923,9 @@ mod table_candidate_selection_tests {
             item_type: ItemType::Text,
             mcid: None,
             baseline_shift: 0.0,
+
+            image_data: None,
+            image_format: None,
         }
     }
 
@@ -6739,6 +6761,9 @@ mod tests {
             item_type: ItemType::Text,
             mcid: None,
             baseline_shift: 0.0,
+
+            image_data: None,
+            image_format: None,
         }
     }
 
@@ -7948,6 +7973,9 @@ mod rotated_run_region_tests {
             is_strikeout: false,
             item_type: ItemType::Text,
             mcid: None,
+
+            image_data: None,
+            image_format: None,
         }
     }
 

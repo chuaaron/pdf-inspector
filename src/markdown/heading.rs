@@ -530,6 +530,9 @@ mod tests {
                 item_type: ItemType::Text,
                 mcid: None,
                 baseline_shift: 0.0,
+
+                image_data: None,
+                image_format: None,
             }],
             y,
             page: 1,
@@ -693,6 +696,9 @@ mod tests {
             item_type: ItemType::Text,
             mcid: None,
             baseline_shift: 0.0,
+
+            image_data: None,
+            image_format: None,
         });
         let lines = vec![
             parent,

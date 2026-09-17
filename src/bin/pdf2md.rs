@@ -291,6 +291,9 @@ mod tests {
             item_type: ItemType::Text,
             mcid: Some(7),
             baseline_shift: 3.5,
+
+            image_data: None,
+            image_format: None,
         }];
 
         let json = format_items_json(&items);
@@ -401,8 +404,33 @@ fn main() {
     env_logger::init();
     let args: Vec<String> = env::args().collect();
 
-    if args.len() < 2 {
-        eprintln!("Usage: {} <pdf_file> [output_file]", args[0]);
+    let mut positional_args = Vec::new();
+    let mut i = 1;
+    while i < args.len() {
+        let arg = &args[i];
+        if [
+            "--image-dir",
+            "--ocr",
+            "--password",
+            "--select-pages",
+            "--ocr-dpi",
+            "--ocr-min-confidence",
+            "--ocr-hosted-threshold",
+            "--ocr-model-dir",
+        ]
+        .contains(&arg.as_str())
+        {
+            i += 2;
+        } else if arg.starts_with("--") {
+            i += 1;
+        } else {
+            positional_args.push(arg.as_str());
+            i += 1;
+        }
+    }
+
+    if positional_args.is_empty() || args.iter().any(|a| a == "-h" || a == "--help") {
+        eprintln!("Usage: {} <pdf_file> [output_file] [options]", args[0]);
         eprintln!("       {} <pdf_file> --json", args[0]);
         eprintln!("       {} <pdf_file> --items-json", args[0]);
         eprintln!("       {} <pdf_file> --raw", args[0]);
@@ -417,11 +445,16 @@ fn main() {
         eprintln!(
             "  --compact           Collapse token-heavy source formatting such as dot leaders"
         );
+        eprintln!("  --images            Extract embedded images and embed markdown links");
+        eprintln!("  --extract-images    Alias for --images");
+        eprintln!("  --image-dir DIR     Directory to save extracted images (implies --images)");
         eprintln!("  --pages             Insert page break markers (<!-- Page N -->)");
         eprintln!("  --select-pages N    Only process specified pages (e.g. 1,3,5-10)");
         eprintln!("  --password PW       Password for an encrypted PDF");
         eprintln!("  --drop-form-fields  Drop AcroForm form-field values that are navigation metadata (e.g. 'P1: OTA/XYZ'), keeping real content");
-        eprintln!("  --drop-page-numbers Drop page break markers (<!-- Page N -->), keeping real content");
+        eprintln!(
+            "  --drop-page-numbers Drop page break markers (<!-- Page N -->), keeping real content"
+        );
         eprintln!("  --detect-only       Only detect PDF type (no extraction)");
         eprintln!("  --analyze           Detect + extract + layout analysis (no markdown)");
         eprintln!("  --ocr MODE          OCR mode: off, auto, or force (requires feature `ocr`)");
@@ -433,7 +466,8 @@ fn main() {
         process::exit(1);
     }
 
-    let pdf_path = &args[1];
+    let pdf_path = positional_args[0];
+    let output_file = positional_args.get(1).copied();
     let json_output = args.iter().any(|a| a == "--json");
     let items_json_output = args.iter().any(|a| a == "--items-json");
     let raw_output = args.iter().any(|a| a == "--raw");
@@ -443,6 +477,13 @@ fn main() {
     let page_numbers = args.iter().any(|a| a == "--pages");
     let detect_only = args.iter().any(|a| a == "--detect-only");
     let analyze = args.iter().any(|a| a == "--analyze");
+    let extract_images = args
+        .iter()
+        .any(|a| a == "--images" || a == "--extract-images");
+    let image_dir_argument = argument_value(&args, "--image-dir").unwrap_or_else(|error| {
+        eprintln!("Error: {error}");
+        process::exit(1);
+    });
     let ocr_mode_argument = argument_value(&args, "--ocr").unwrap_or_else(|error| {
         eprintln!("Error: {error}");
         process::exit(1);
@@ -477,11 +518,6 @@ fn main() {
             })
         });
 
-    let output_file = args
-        .get(2)
-        .filter(|a| !a.starts_with("--"))
-        .map(|s| s.as_str());
-
     let has_ocr_only_option = [
         "--ocr-dpi",
         "--ocr-min-confidence",
@@ -497,6 +533,25 @@ fn main() {
             json_output,
         );
     }
+
+    let images_enabled = extract_images || image_dir_argument.is_some();
+    let resolved_image_dir = if images_enabled {
+        if let Some(dir) = image_dir_argument {
+            Some(dir.to_string())
+        } else if let Some(output) = output_file {
+            let p = std::path::Path::new(output);
+            let stem = p.file_stem().and_then(|s| s.to_str()).unwrap_or("output");
+            if let Some(parent) = p.parent().filter(|p| !p.as_os_str().is_empty()) {
+                Some(format!("{}/{}_images", parent.display(), stem))
+            } else {
+                Some(format!("{}_images", stem))
+            }
+        } else {
+            Some("images".to_string())
+        }
+    } else {
+        None
+    };
 
     if let Some(mode) = ocr_mode_argument {
         if items_json_output || detect_only || analyze {
@@ -521,9 +576,9 @@ fn main() {
                 "off" => OcrMode::Off,
                 "auto" => OcrMode::Auto,
                 "force" => OcrMode::Force,
-                value => {
+                other => {
                     exit_ocr_error(
-                        &format!("invalid --ocr mode {value:?}; expected off, auto, or force"),
+                        &format!("invalid --ocr value: {other:?} (expected off, auto, or force)"),
                         json_output,
                     );
                 }
@@ -561,6 +616,10 @@ fn main() {
             if drop_page_numbers {
                 markdown.include_page_numbers = false;
             }
+            if let Some(ref dir) = resolved_image_dir {
+                markdown.include_images = true;
+                markdown.image_dir = Some(dir.clone());
+            }
             let mut pdf_options = OcrPdfOptions::new()
                 .render(RenderOptions::new().dpi(dpi))
                 .ocr(ocr)
@@ -596,6 +655,11 @@ fn main() {
                             fs::write(output, &result.markdown)
                                 .expect("Failed to write output file");
                             eprintln!("Markdown written to: {output}");
+                            if let Some(ref dir) = resolved_image_dir {
+                                if std::path::Path::new(dir).exists() {
+                                    eprintln!("Images exported to: {dir}");
+                                }
+                            }
                         } else {
                             eprintln!();
                             eprintln!("--- Markdown Output ---");
@@ -645,6 +709,10 @@ fn main() {
     }
     if drop_page_numbers {
         options.markdown.include_page_numbers = false;
+    }
+    if let Some(ref dir) = resolved_image_dir {
+        options.markdown.include_images = true;
+        options.markdown.image_dir = Some(dir.clone());
     }
 
     match process_pdf_with_options(pdf_path, options) {
@@ -781,6 +849,11 @@ fn main() {
                                 eprintln!();
                                 eprintln!("Markdown written to: {}", output);
                                 eprintln!("Length: {} characters", markdown.len());
+                                if let Some(ref dir) = resolved_image_dir {
+                                    if std::path::Path::new(dir).exists() {
+                                        eprintln!("Images exported to: {}", dir);
+                                    }
+                                }
                             } else {
                                 eprintln!();
                                 eprintln!("--- Markdown Output ---");
@@ -824,6 +897,11 @@ fn main() {
                                 fs::write(output, markdown).expect("Failed to write output file");
                                 eprintln!("Markdown written to: {}", output);
                                 eprintln!("Length: {} characters", markdown.len());
+                                if let Some(ref dir) = resolved_image_dir {
+                                    if std::path::Path::new(dir).exists() {
+                                        eprintln!("Images exported to: {}", dir);
+                                    }
+                                }
                             } else {
                                 eprintln!("--- Markdown Output ---");
                                 eprintln!();
