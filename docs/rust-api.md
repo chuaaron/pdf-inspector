@@ -108,6 +108,20 @@ let result = process_pdf_with_options(
 )?;
 ```
 
+Drop navigation metadata that is not document content: AcroForm form-field
+values and content-stream destination/bookmark markers (for example
+named-destination entries like `P1: OTA/XYZ`, internal bookmarks like
+`JWBT634-c03`, or producer print footers like `Printer: Hamilton Printing`):
+
+```rust
+use pdf_inspector::{process_pdf_with_options, PdfOptions};
+
+let result = process_pdf_with_options(
+    "document.pdf",
+    PdfOptions::new().include_form_fields(false),
+)?;
+```
+
 Process from a byte buffer (no filesystem needed):
 
 ```rust
@@ -562,7 +576,7 @@ Low-level detection functions are also available via the `detector` module (`det
 
 | Type | Description |
 |---|---|
-| `PdfOptions` | Builder for processing configuration (mode, detection, markdown, page filter) |
+| `PdfOptions` | Builder for processing configuration (mode, detection, markdown, page filter, form fields) |
 | `ProcessMode` | `DetectOnly`, `Analyze`, `Full` |
 | `PdfType` | `TextBased`, `Scanned`, `ImageBased`, `Mixed` |
 | `PdfProcessResult` | Full result: pdf_type, markdown, page_count, confidence, layout, has_encoding_issues, timing |

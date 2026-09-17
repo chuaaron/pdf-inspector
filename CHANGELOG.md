@@ -9,6 +9,17 @@ version and date. Earlier releases are described in their
 
 ## [Unreleased]
 
+### Added
+
+- An `include_form_fields` option (default `true`) drops navigation metadata
+  that is not document content: AcroForm form-field values and content-stream
+  destination/bookmark markers (for example named-destination entries like
+  `P1: OTA/XYZ`, internal bookmark tokens like `JWBT634-c03`, and producer
+  print footers like `Printer: Hamilton Printing`). Rust
+  `PdfOptions::include_form_fields(bool)`; Python `process_pdf(...,
+  include_form_fields=False)` and `process_pdf_bytes(..., include_form_fields=False)`;
+  and the `pdf2md` CLI `--drop-form-fields` flag.
+
 ## [1.20.0] - 2026-09-14
 
 Changes since 1.19.0.
