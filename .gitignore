@@ -42,3 +42,7 @@ test_output/
 __pycache__/
 *.pyc
 .pytest_cache/
+.cache_llm_text/
+*.md
+*.jpg
+*.png
